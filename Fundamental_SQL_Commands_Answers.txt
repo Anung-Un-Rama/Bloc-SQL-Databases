@@ -10,6 +10,8 @@ A:
 
 3. What are some of the data types that can be used in tables? Give a real-world example of each type.
 
+A: 
+
 4. Decide how to create a new table to hold a list of people invited to a wedding dinner. The table needs to have first and last names, whether they sent in their RSVP, the number of guests they are bringing, and the number of meals (1 for adults and 1/2 for children).
 
 - Which data type would you use to store each of the following pieces of information?
