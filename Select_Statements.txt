@@ -1,9 +1,17 @@
 /////////EXERCISES/////////
 
+
 1. Write out a generic SELECT statement.
+
+	SELECT size, type
+	FROM pizza
+	WHERE size LIKE 'Large%'
+	AND type NOT anchovy;
 
 
 2. Create a fun way to remember the order of operations in a SELECT statement, such as a mnemonic.
+
+  Hey! We can SELECT the 'toy' FROM the 'bucket' WHERE the 'toy' is LIKE a dear old trumpet. (I tried).
 
 
 3. Given this dogs table, write queries to select the following pieces of data:
@@ -13,13 +21,76 @@ Intake teams typically guess the breed of shelter dogs, so the breed column may 
 
   - Display the name, gender, and age of all dogs that are part Labrador.
 
+  	SELECT name, gender, age
+  	FROM dogs
+  	WHERE breed='labrador';
+
+    Result:
+
+	name	gender	age
+	
+	Marley	M	0
+
+
+
   - Display the ids of all dogs that are under 1 year old.
+
+	SELECT id
+	FROM dogs
+	WHERE age < 1;
+
+  Result:
+
+	id
+	
+	10002
+	10004
+
 
   - Display the name and age of all dogs that are female and over 35lbs.
 
+	SELECT name, age
+	FROM dogs
+	WHERE gender='F' and weight > 35;
+
+  Result:
+
+	name	age
+	
+	Boujee	3
+
+
   - Display all of the information about all dogs that are not Shepherd mixes.
 
+  	SELECT *
+	FROM dogs
+	WHERE breed NOT LIKE '%shepherd%';
+
+  Result:
+
+	id	name	gender	age	weight	breed	intake_date	in_foster
+	
+	10001	Boujee	F	3	36	labrador poodle	2017-06-22T00:00:00.000Z	null
+	10002	Munchkin	F	0	8	dachsund chihuahua	2017-01-13T00:00:00.000Z		2017-01-31T00:00:00.000Z
+	10004	Marley	M	0	10	labrador	2017-05-04T00:00:00.000Z				2016-06-20T00:00:00.000Z
+	10006	Marmaduke	M	7	150	great dane	2016-03-22T00:00:00.000Z			2016-05-15T00:00:00.000Z
+	10007	Rosco	M	5	180	rottweiler	2017-04-01T00:00:00.000Z	null
+
+
+
   - Display the id, age, weight, and breed of all dogs that are either over 60lbs or Great Danes.
+
+	SELECT id, age, weight
+	FROM dogs
+	WHERE weight > 60 OR breed='great dane';
+
+  Result:
+
+	id	age	weight
+	
+	10006	7	150
+	10007	5	180
+
 
 
 4. Given this cats table, what records are returned from these queries?
@@ -27,28 +98,118 @@ Intake teams typically guess the breed of shelter dogs, so the breed column may 
 
   - SELECT name, adoption_date FROM cats;
 
+	name	adoption_date
+	
+	Mushi	2016-03-22T00:00:00.000Z
+	Seashell	null
+	Azul	2016-04-17T00:00:00.000Z
+	Victoire	2016-09-01T00:00:00.000Z
+	Nala	null
+
 
   - SELECT name, age FROM cats;
+
+	name	age
+	
+	Mushi	1
+	Seashell	7
+	Azul	3
+	Victoire	7
+	Nala	1
 
 
 5. From the cats table, write queries to select the following pieces of data.
 
-Display all the information about all of the available cats.
 
-Display the name and sex of all cats who are 7 years old.
+  - Display all the information about all of the available cats.
 
-Find all of the names of the cats, so you don’t choose duplicate names for new cats.
+	SELECT *
+	FROM cats
+	WHERE adoption_date=null;
+
+
+  - Display the name and sex of all cats who are 7 years old.
+
+	SELECT name, gender
+	FROM cats
+	WHERE age=7;
+
+  Result:
+
+	name	gender
+	
+	Seashell	F
+	Victoire	M
+
+
+
+  - Find all of the names of the cats, so you don’t choose duplicate names for new cats.
+
+	SELECT DISTINCT name
+	FROM cats;
+
+  Result:
+
+	name
+	
+	Azul
+	Seashell
+	Nala
+	Mushi
+	Victoire
+
 
 
 6. List each comparison operator and explain when you would use it. Include a real world example for each.
 
+
   - If you can’t list these from memory, do these flashcards until you can!
+
+  = Means that the value is equal to, or the same as the what you're searching for. Like, my name='Jared'
+
+  < or > are the less than and greater than signs. So you can search for my age with this. Example: my age is <
+  100
+
+  <= Is less than or equal too. My age is <= 100 and or >= is greater than or equal to. My age is >= 100.
+
+  != Means it isn't equal to the value. My name != 'Jeff Probst'. 
+
+  LIKE allows you to search for things less strictly with the aid of %. My name is LIKE 'J%' will return names
+  with the letter 'J' in the beginning. 
+
+  AND will return look for two values and return what has both of those values. My name='Jared' AND handsome.
+
+  OR will return the values with either of the two you want, but not exclusively. Looking for my name='Jared' OR
+  handsome, would return me and 'Jeff Probst'.
+
+  NOT will help you hone down your search by looking for things other than what is followed by NOT. Looking for
+  name NOT LIKE 'Jared' will return good ol' 'Jeff Probst'.
 
 
 7. From the cats table, what data is returned from these queries?
 
   - SELECT name FROM cats WHERE gender = ‘F’;
 
+	name
+
+	Seashell
+	Nala
+
+
   - SELECT name FROM cats WHERE age <> 3;
 
+	name
+
+	Mushi
+	Seashell
+	Victoire
+	Nala
+
+
+
   - SELECT ID FROM cats WHERE name != ‘Mushi’ AND gender = ‘M’;
+
+	id
+
+	3
+	4
