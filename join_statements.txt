@@ -2,14 +2,35 @@
 
 1. How do you find related data held in two separate data tables?
 
+A: By using the JOIN clause. 
+
+
 
 2. Explain, in your own words, the difference between an INNER JOIN, LEFT OUTER JOIN, and RIGHT OUTER JOIN. Give a real-world example for each.
+
+  - INNER JOIN: This is the default for the way tables will combine, making a single row result table for each row that are common for the
+    queried tables. For example, you want to compare two tables for dogs and cats. Say that there's one person who owns both a dog and cat,
+    and they are under the owner field in both tables. If you compared dogs and cats, the result table would yield the owner as a common row. 
+
+  - LEFT OUTER JOIN: This will combine tables so that it will contain a row from the first table with all the matching rows from the second
+    table. An example of this would be, using the dog and cat tables, would output all of the dog data with only the matching rows of the cat
+    table. Like if the dog and cat had the same fur color, owner, and veterinarian. It would display where the cat table matched while showing
+    all of the dog data.
+
+  - RIGHT OUTER JOIN: This will combine two tables so that the results table will have each matching row between the queried table and the
+    second table. Going off our dog and cat example, this would be the opposite of the prior example. So, it would show all of the cat data,
+    and only the matching data of the queried table, dogs. 
 
 
 3. Define primary key and foreign key. Give a real-world example for each.
 
+A: The primary key is the unique identifier for all of the rows in a database's table. ex.(id, name, height, sassiness). These identifiers can
+   be used in other separate tables as foreign keys. A good example of this would be if there was a third table, owner. In that table there is
+   a primary key, id. This would could be referenced as a foreign key in both dog and cat as owner_id. 
 
 4. Define aliasing.
+
+A: This is a way of making variable names as a replacement for a table name in a query
 
 
 5. Change this query so that you are using aliasing:
@@ -20,36 +41,187 @@
 	compensation.professor_id;
 
 
+Aliased:
+
+	SELECT p.name, c.salary, c.vacation_days
+	FROM professor AS p
+	JOIN compensation AS c
+	ON p.name = c.name;
+
+
 6. Why would you use a NATURAL JOIN? Give a real-world example.
+
+A: NATURAL JOIN is snazzy because it is short hand for USING and it forms a list only of the column names that appear in both tables. You could use NATURAL JOIN on the dog and cat tables and it would make an output table of only the data with the same column names. 
 
 
 7. Using this Employee schema and data, write queries to find the following information:
 
   - List all employees and all shifts.
 
+	SELECT shifts.date, shifts.start_time, shifts.end_time, employees.name
+	FROM shifts
+	LEFT OUTER JOIN scheduled_shifts ON scheduled_shifts.shift_id = shifts.id
+	LEFT OUTER JOIN employees ON scheduled_shifts.employee_id = employees.id; 
+
 
 8. Using this Adoption schema and data, please write queries to retrieve the following information and include the results:
 
   - Create a list of all volunteers. If the volunteer is fostering a dog, include each dog as well.
 
+	SELECT volunteers,dogs.name
+	FROM volunteers
+	LEFT JOIN dogs ON dogs.id = volunteers.foster_dog_id;
 
-  - The cat's name, adopter's name, and adopted date for each cat adopted within the past month to be displayed as part of the "Happy Tail" social
-  media promotion which posts recent successful adoptions.
+  Results:
+
+	volunteers	                                                         name
+	
+	(2,Rubeus,Hagrid,"1 Edge of Forbidden Forest",256-667-2378,t,10002)	Munchkin
+	(5,Marjorie,Dursley,"1990 Next Door to Fubster",463-528-2253,t,10006)	Marmaduke
+	(4,Sirius,Black,"12 Grimmauld Place",878-666-4663,t,)	                null
+	(3,Remus,Lupin,"12 Grimmauld Place",627-283-3771,t,)	                null
+	(1,Albus,Dumbledore,"99 Godric's Hollow",843-746-3649,f,)	        null
+
+
+
+  - The cat's name, adopter's name, and adopted date for each cat adopted within the past month to be displayed as part of
+    the "Happy Tail" social media promotion which posts recent successful adoptions.
+
+	SELECT adopters.first_name, adopters.last_name, cat_adoptions.date, cats.name
+	FROM cat_adoptions
+	JOIN cats ON cats.id = cat_adoptions.cat_id
+	JOIN adopters ON adopters.id = cat_adoptions.adopter_id
+	WHERE cat_adoptions.date > CURRENT_DATE - INTERVAL '30 DAYS';
+
+  Result:
+
+	first_name	last_name	date	               name
+
+	Arabella	Figg	    2019-01-04T00:00:00.000Z	Mushi
+	Argus	Filch	            2019-01-09T00:00:00.000Z	Victoire
 
 
   - Create a list of adopters who have not yet chosen a dog to adopt.
 
 
+	SELECT adopters.id, adopters.first_name, adopters.last_name, dogs.id, dogs.name
+	FROM adopters
+	FULL OUTER JOIN dog_adoptions ON dog_adoptions.adopter_id = adopters.id
+	CROSS JOIN dogs
+	WHERE dog_adoptions.adopter_id IS NULL AND dogs.id NOT IN (SELECT dog_adoptions.dog_id FROM dog_adoptions)
+	ORDER BY adopters.id;
+
+  Results:
+
+	id	first_name	last_name	id	    name
+
+	1	Hermione	Granger	        10006	    Marmaduke
+	1	Hermione	Granger	        10001	    Boujee
+	1	Hermione	Granger		10002	    Munchkin
+	1	Hermione	Granger		10004	    Marley
+	1	Hermione	Granger		10003	    Lassie
+	2	Arabella	Figg		10006	    Marmaduke
+	2	Arabella	Figg		10003	    Lassie
+	2	Arabella	Figg		10002	    Munchkin
+	2	Arabella	Figg		10001	    Boujee
+	2	Arabella	Figg		10004	    Marley
+
+
   - Lists of all cats and all dogs who have not been adopted.
+
+	SELECT cats.id, cats.name, cat_adoptions.adopter_id
+   	FROM cats
+    	LEFT OUTER JOIN cat_adoptions ON cats.id = cat_adoptions.cat_id
+    	WHERE cat_adoptions.adopter_id IS NULL;
+    	
+	SELECT dogs.id, dogs.name, dog_adoptions.adopter_id
+    	FROM dogs
+    	LEFT OUTER JOIN dog_adoptions ON dogs.id = dog_adoptions.dog_id
+   	 WHERE dog_adoptions.adopter_id IS NULL;
+
+  Result:
+
+              ////Cats////
+
+	id	name	  adopter_id
+
+	2	Seashell  null
+	5	Nala	  null
+
+             
+	     ////Dogs////
+
+
+	id	name	    adopter_id
+
+	10002	Munchkin     null
+	10001	Boujee	     null
+	10003	Lassie	     null
+	10004	Marley	     null
+	10006	Marmaduke    null
 
 
   - The name of the person who adopted Rosco.
 
+	SELECT dog_adoptions.adopter_id, adopters.first_name, adopters.last_name, dogs.id, dogs.name
+    	FROM dog_adoptions
+    	JOIN adopters ON adopters.id = dog_adoptions.adopter_id
+   	JOIN dogs ON dogs.id = dog_adoptions.dog_id
+    	WHERE dogs.name = 'Rosco';
+
+	
+  Results:
+
+	adopter_id   first_name   last_name   id	name
+
+	3	     Argus	   Filch      10007	Rosco
+
+
 
 9. Using this Library schema and data, write queries applying the following scenarios and include the results:
 
-  - To determine if the library should buy more copies of a given book, please provide the names and position, in order, of all of the patrons
-  with a hold (request for a book with all copies checked out) on "Advanced Potion-Making".
+  - To determine if the library should buy more copies of a given book, please provide the names and position, in order, of  
+    all of the patrons with a hold (request for a book with all copies checked out) on "Advanced Potion-Making".
+
+	SELECT patrons.name, holds.rank, books.title
+    	FROM holds
+    	LEFT OUTER JOIN patrons ON patrons.id = holds.patron_id
+    	LEFT OUTER JOIN books ON books.isbn = holds.isbn
+    	WHERE books.title = 'Advanced Potion-Making'
+    	ORDER BY holds.rank;
+
+  Result:
+
+	name	        rank	title
+
+	Terry Boot	1	Advanced Potion-Making
+	Cedric Diggory	2	Advanced Potion-Making
 
 
   - List all of the library patrons. If they have one or more books checked out, list the books with the patrons.
+
+  	SELECT patrons.id, patrons.name, transactions.isbn, books.title, transactions.checked_out_date,
+  	transactions.checked_in_date
+  	FROM patrons
+  	RIGHT OUTER JOIN transactions ON patrons.id = transactions.patron_id
+  	RIGHT OUTER JOIN books ON books.isbn = transactions.isbn
+  	ORDER BY patrons.id;
+
+
+  Results:
+
+	id   name	      isbn	     title	           checked_out_date	        checked_in_date
+
+	1    Hermione Granger  3458400871     Fantastic Beasts and Where to Find Them	2019-01-21T00:00:00.000Z		2019-01-23T00:00:00.000Z
+	
+	1    Hermione Granger  1840918626     Hogwarts: A History   2013-01-23T00:00:00.000Z 2013-01-24T00:00:00.000Z
+
+	2    Terry Boot	9136884926	Advanced Potion-Making	2019-01-21T00:00:00.000Z	null
+
+	2    Terry Boot	3458400871	Fantastic Beasts and Where to Find Them	2013-01-23T00:00:00.000Z			2013-01-24T00:00:00.000Z
+
+	3    Padma Patil	3458400871	Fantastic Beasts and Where to Find Them	2019-01-17T00:00:00.000Z		2019-01-20T00:00:00.000Z
+
+	4    Cho Chang	9136884926	Advanced Potion-Making	2013-01-23T00:00:00.000Z  2013-01-24T00:00:00.000Z
+
+	5    Cedric Diggory	3458400871	Fantastic Beasts and Where to Find Them	2019-01-23T00:00:00.000Z	null
