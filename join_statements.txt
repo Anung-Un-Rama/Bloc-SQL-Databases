@@ -200,28 +200,24 @@ A: NATURAL JOIN is snazzy because it is short hand for USING and it forms a list
 
   - List all of the library patrons. If they have one or more books checked out, list the books with the patrons.
 
-  	SELECT patrons.id, patrons.name, transactions.isbn, books.title, transactions.checked_out_date,
-  	transactions.checked_in_date
-  	FROM patrons
-  	RIGHT OUTER JOIN transactions ON patrons.id = transactions.patron_id
-  	RIGHT OUTER JOIN books ON books.isbn = transactions.isbn
-  	ORDER BY patrons.id;
+	SELECT patrons.name, books.title 
+	FROM transactions 
+	FULL OUTER JOIN patrons ON transactions.patron_id = patrons.id 
+	FULL OUTER JOIN books ON transactions.isbn = books.isbn 
+	WHERE transactions.checked_out_date IS NOT NULL
+	ORDER BY patrons.name;
 
 
   Results:
 
-	id   name	      isbn	     title	           checked_out_date	        checked_in_date
+	name	          title
 
-	1    Hermione Granger  3458400871     Fantastic Beasts and Where to Find Them	2019-01-21T00:00:00.000Z		2019-01-23T00:00:00.000Z
-	
-	1    Hermione Granger  1840918626     Hogwarts: A History   2013-01-23T00:00:00.000Z 2013-01-24T00:00:00.000Z
+	Cedric Diggory	  Fantastic Beasts and Where to Find Them
+	Cho Chang	  Advanced Potion-Making
+	Hermione Granger  Fantastic Beasts and Where to Find Them
+	Hermione Granger  Hogwarts: A History
+	Padma Patil	  Fantastic Beasts and Where to Find Them
+	Terry Boot	  Advanced Potion-Making
+	Terry Boot	  Fantastic Beasts and Where to Find Them
+ 
 
-	2    Terry Boot	9136884926	Advanced Potion-Making	2019-01-21T00:00:00.000Z	null
-
-	2    Terry Boot	3458400871	Fantastic Beasts and Where to Find Them	2013-01-23T00:00:00.000Z			2013-01-24T00:00:00.000Z
-
-	3    Padma Patil	3458400871	Fantastic Beasts and Where to Find Them	2019-01-17T00:00:00.000Z		2019-01-20T00:00:00.000Z
-
-	4    Cho Chang	9136884926	Advanced Potion-Making	2013-01-23T00:00:00.000Z  2013-01-24T00:00:00.000Z
-
-	5    Cedric Diggory	3458400871	Fantastic Beasts and Where to Find Them	2019-01-23T00:00:00.000Z	null
